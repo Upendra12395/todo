@@ -114,3 +114,78 @@ module.exports.remove = (req, res) => {
             res.status(500).json({ message: err.message })
         })
 }
+
+module.exports.todayRegistered = async (req, res) => {
+    //const todayDate = new Date()
+    let { page = 1, limit = 10 } = req.query
+    page = parseInt(page)
+    limit = parseInt(limit)
+    User.find({
+        createdAt: {
+            $lt: new Date(),
+            $gte: new Date(new Date().setDate(new Date().getDate() - 1))
+        }
+    })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .then((user) => {
+            res.status(200).json(user)
+        })
+        .catch(err => {
+            res.status(500).json({ message: err.message })
+        })
+}
+
+
+// TODO List with Pagination
+// Add Pagination on all get routes
+module.exports.weekActive = async (req, res) => {
+    let { page = 1, limit = 10 } = req.query
+    page = parseInt(page)
+    limit = parseInt(limit)
+    await Todo.aggregate([{ $match: { updatedAt: { $lt: new Date(), $gte: new Date(new Date().setDate(new Date().getDate() - 7)) } } }, { $project: { userId: 1 } }])
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .then((todo) => {
+            res.status(200).json(todo)
+        })
+        .catch(err => {
+            res.status(500).json({ message: err.message })
+        })
+}
+
+
+// TODO List with Pagination
+// Add Pagination on all get routes
+module.exports.monthActive = async (req, res) => {
+    let { page = 1, limit = 10 } = req.query
+    page = parseInt(page)
+    limit = parseInt(limit)
+    await Todo.aggregate([{ $match: { updatedAt: { $lt: new Date(), $gte: new Date(new Date().setDate(new Date().getDate() - 30)) } } }, { $project: { userId: 1 } }])
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .then((todo) => {
+            res.status(200).json(todo)
+        })
+        .catch(err => {
+            res.status(500).json({ message: err.message })
+        })
+}
+
+
+// TODO List with Pagination
+// Add Pagination on all get routes
+module.exports.todayActive = async (req, res) => {
+    let { page = 1, limit = 10 } = req.query
+    page = parseInt(page)
+    limit = parseInt(limit)
+    await Todo.aggregate([{ $match: { updatedAt: { $lt: new Date(), $gte: new Date(new Date().setDate(new Date().getDate() - 1)) } } }, { $project: { userId: 1 } }])
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .then((todo) => {
+            res.status(200).json(todo)
+        })
+        .catch(err => {
+            res.status(500).json({ message: err.message })
+        })
+}
