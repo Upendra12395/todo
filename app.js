@@ -1,7 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const userRouter = require('./routes/user')
-//const todoRouter = require('./routes/todo')
+const todoRouter = require('./routes/todo')
 require('dotenv').config()
 
 const app = express()
@@ -21,7 +21,7 @@ mongoose.connection.on('open', ()=>{
 })
 
 app.use('/user', userRouter)
-//app.use('/todo', todoRouter)
+app.use('/todo', todoRouter)
 
 
 app.listen(PORT, ()=>{
