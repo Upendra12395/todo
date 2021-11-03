@@ -10,5 +10,8 @@ router.post('/signIn', userController.signIn)
 router.post('/logIn', userController.logIn)
 router.patch('/update/:id', userAuth, userController.updateOne)
 router.delete('/remove/:id', adminAuth, userController.remove)
+router.get('/todayRegistered', adminAuth, userController.todayRegistered)
+router.get('/todayActive', adminAuth, userController.todayActive)
+router.get('/weekActive', adminAuth, userController.weekActive)
 
 module.exports = router

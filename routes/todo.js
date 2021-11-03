@@ -14,7 +14,6 @@ router.delete('/deleteTodo/:id', userAuth, todoController.deleteOne)
 router.get('/getByCategory/:id', adminAuth, todoController.getBycategory)
 router.get('/getByStatus/:id', adminAuth, todoController.getByStatus)
 router.patch('/updateStatusByAdmin/:id', adminAuth, todoController.updateStatusByAdmin)
-router.patch('/updateStatus/:id', userAuth, todoController.updateStatus)
 router.get('/sortTodo', adminAuth, todoController.sortTodo)
 
 
