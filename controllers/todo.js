@@ -27,8 +27,7 @@ module.exports.addTodo = async (req, res) => {
         });
 }
 
-// TODO List with Pagination
-// Add Pagination on all get routes
+
 //controller for user to shwo all todo for that user
 module.exports.userTodo = async (req, res) => {
     //pagination part limiting and control the data using page and limit
@@ -48,8 +47,7 @@ module.exports.userTodo = async (req, res) => {
 
 }
 
-// TODO List with Pagination
-// Add Pagination on all get routes
+
 //controller for admin to show all todos
 module.exports.allTodo = async (req, res) => {
     //pagination part limiting and control the data using page and limit
