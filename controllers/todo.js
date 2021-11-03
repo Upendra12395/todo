@@ -160,22 +160,3 @@ module.exports.updateStatusByAdmin = async (req, res) => {
             res.status(500).json({ message: err.message })
         })
 }
-
-module.exports.updateStatus = async (req, res) => {
-    const id = req.params.id
-    const uid = req.user._id
-    await Todo.findOne({ _id: id, userId: uid }).then((isMatch) => {
-        if (!isMatch) {
-            return res.status(401).json({ message: 'You are not authorized' })
-        } else {
-            Todo.updateOne({ _id: { $eq: id } }, { status: "Done" })
-                .then((todo) => {
-                    res.status(200).json({ message: "Status updated to Done" })
-                })
-                .catch(err => {
-                    res.status(500).json({ message: err.message })
-                })
-        }
-    })
-
-}
