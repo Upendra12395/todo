@@ -71,7 +71,7 @@ module.exports.getOneTodo = async (req, res) => {
     let id = req.params.id
     const uId = req.user._id
 
-    await Todo.findById({ _id: id, user: uId })
+    await Todo.findOne({ _id: id, user: uId }).populate('user', 'userName')
         .then((todo) => {
             if (!todo) {
                 res.status(401).json({ message: 'You are not authorized' })
@@ -92,46 +92,46 @@ module.exports.updateOne = async (req, res) => {
         if (!isMatch) {
             res.status(401).json({ message: "You are not authorized" })
         } else {
-                Todo.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+            Todo.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
                 .then((todo) => {
-                    res.json(todo)
+                    res.status(200).json({message : 'Todo updated successfully'})
                 })
         }
     })
-    .catch((error) => {
-        res.status(500).json({ message: error.message })
-    })
+        .catch((error) => {
+            res.status(500).json({ message: error.message })
+        })
 }
 
 //controller to delete one todo by id
 module.exports.deleteOne = async (req, res) => {
     const id = req.params.id
     const uId = req.user._id
-    await Todo.findOne({_id : id, user : uId}).then((isMatch)=>{
-        if(!isMatch){
-            res.status(401).json({message : 'You are not authorized'})
-        }else{
+    await Todo.findOne({ _id: id, user: uId }).then((isMatch) => {
+        if (!isMatch) {
+            res.status(401).json({ message: 'You are not authorized' })
+        } else {
             Todo.findByIdAndDelete(id)
-        .then((todo) => {
-            res.send({ message: "todo deleted successfully" })
-        })
-        .catch(error => {
-            res.status(500).json({ message: error.message })
-        })
+                .then((todo) => {
+                    res.send({ message: "todo deleted successfully" })
+                })
+                .catch(error => {
+                    res.status(500).json({ message: error.message })
+                })
         }
     })
-    .catch(err=>{
-        res.status(500).json({message : err.message})
-    })
+        .catch(err => {
+            res.status(500).json({ message: err.message })
+        })
 }
 
 module.exports.getBycategory = async (req, res) => {
     let { page = 1, limit = 10 } = req.query
     page = parseInt(page)
     limit = parseInt(limit)
-    const category = req.params.category
-    await Todo.find({ category: category })
-    .skip((page - 1) * limit)
+    const category = req.params.id
+    await Todo.find({ category: category }).populate('user', 'userName')
+        .skip((page - 1) * limit)
         .limit(limit)
         .then((todo) => {
             res.status(200).json(todo)
@@ -145,9 +145,9 @@ module.exports.getByStatus = async (req, res) => {
     let { page = 1, limit = 10 } = req.query
     page = parseInt(page)
     limit = parseInt(limit)
-    const status = req.params.status
-    await Todo.find({ status: status })
-    .skip((page - 1) * limit)
+    const status = req.params.id
+    await Todo.find({ status: status }).populate('user', 'userName')
+        .skip((page - 1) * limit)
         .limit(limit)
         .then(todo => {
             res.status(200).json(todo)
@@ -161,8 +161,8 @@ module.exports.sortTodo = async (req, res) => {
     let { page = 1, limit = 10 } = req.query
     page = parseInt(page)
     limit = parseInt(limit)
-    await Todo.find()
-    .skip((page - 1) * limit)
+    await Todo.find().populate('user', 'userName')
+        .skip((page - 1) * limit)
         .limit(limit)
         .sort({ createdAt: 1 })
         .then((todo) => {

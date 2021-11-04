@@ -77,9 +77,16 @@ module.exports.logIn = (req, res) => {
 }
 
 module.exports.getAllUser = (req, res) => {
-    User.find().then((user) => {
-        res.status(200).json(user)
-    })
+    let { page = 1, limit = 10 } = req.query
+    page = parseInt(page)
+    limit = parseInt(limit)
+    User.find()
+        .populate('todoList', 'title')
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .then((user) => {
+            res.status(200).json(user)
+        })
         .catch(err => {
             res.status(500).json({ message: err.message })
         })
@@ -91,7 +98,7 @@ module.exports.updateOne = (req, res) => {
     Todo.findOne({ _id: id, user: uId }).then((user) => {
         if (!user) {
             res.status(401).json({ message: 'You are not authorized' })
-        }else {
+        } else {
             User.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
                 .then(() => {
                     res.status(200).json({ message: 'User details updated successfully' })
@@ -126,6 +133,7 @@ module.exports.todayRegistered = async (req, res) => {
             $gte: new Date(new Date().setDate(new Date().getDate() - 1))
         }
     })
+        .populate('todoList', 'title')
         .skip((page - 1) * limit)
         .limit(limit)
         .then((user) => {
@@ -141,7 +149,8 @@ module.exports.weekActive = async (req, res) => {
     let { page = 1, limit = 10 } = req.query
     page = parseInt(page)
     limit = parseInt(limit)
-    await User.aggregate([{ $match: { loggedInAt: { $lt: new Date(), $gte: new Date(new Date().setDate(new Date().getDate() - 7)) } } }])
+    await User.find({ loggedInAt: { $lt: new Date(), $gte: new Date(new Date().setDate(new Date().getDate() - 7)) } })
+        .populate('todoList', 'title')
         .skip((page - 1) * limit)
         .limit(limit)
         .then((user) => {
@@ -157,7 +166,8 @@ module.exports.todayActive = async (req, res) => {
     let { page = 1, limit = 10 } = req.query
     page = parseInt(page)
     limit = parseInt(limit)
-    await User.aggregate([{ $match: { loggedInAt: { $lt: new Date(), $gte: new Date(new Date().setDate(new Date().getDate() - 1)) } } }])
+    await User.find({ loggedInAt: { $lt: new Date(), $gte: new Date(new Date().setDate(new Date().getDate() - 1)) } })
+        .populate('todoList', 'title')
         .skip((page - 1) * limit)
         .limit(limit)
         .then((user) => {
