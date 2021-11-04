@@ -3,13 +3,13 @@ const User = require('../models/user')
 
 // controller to add todo
 module.exports.addTodo = async (req, res) => {
-    const { userId, title, status, category } = req.body
+    const { user, title, status, category } = req.body
     if (!title || !status || !category) {
         return res.status(400).json({ message: "please enter all fieds" });
     }
     const id = req.user._id
     const newTodo = new Todo({
-        userId: id,
+        user: id,
         title: title,
         status: status,
         category: category
@@ -35,7 +35,7 @@ module.exports.userTodo = async (req, res) => {
     page = parseInt(page)
     limit = parseInt(limit)
     const id = req.user._id
-    await Todo.find({ user: id }).populate('userId', 'userName')
+    await Todo.find({ user: id }).populate('user', 'userName')
         .skip((page - 1) * limit)
         .limit(limit)
         .then((todos) => {
@@ -54,7 +54,7 @@ module.exports.allTodo = async (req, res) => {
     let { page = 1, limit = 10 } = req.query
     page = parseInt(page)
     limit = parseInt(limit)
-    await Todo.find().populate('userId', 'userName')
+    await Todo.find().populate('user', 'userName')
         .skip((page - 1) * limit)
         .limit(limit)
         .then((todos) => {
@@ -106,13 +106,23 @@ module.exports.updateOne = async (req, res) => {
 //controller to delete one todo by id
 module.exports.deleteOne = async (req, res) => {
     const id = req.params.id
-    await Todo.findByIdAndDelete(id)
+    const uId = req.user._id
+    await Todo.findOne({_id : id, user : uId}).then((isMatch)=>{
+        if(!isMatch){
+            res.status(401).json({message : 'You are not authorized'})
+        }else{
+            Todo.findByIdAndDelete(id)
         .then((todo) => {
             res.send({ message: "todo deleted successfully" })
         })
         .catch(error => {
             res.status(500).json({ message: error.message })
         })
+        }
+    })
+    .catch(err=>{
+        res.status(500).json({message : err.message})
+    })
 }
 
 module.exports.getBycategory = async (req, res) => {
