@@ -126,8 +126,13 @@ module.exports.deleteOne = async (req, res) => {
 }
 
 module.exports.getBycategory = async (req, res) => {
+    let { page = 1, limit = 10 } = req.query
+    page = parseInt(page)
+    limit = parseInt(limit)
     const category = req.params.category
     await Todo.find({ category: category })
+    .skip((page - 1) * limit)
+        .limit(limit)
         .then((todo) => {
             res.status(200).json(todo)
         })
@@ -137,8 +142,13 @@ module.exports.getBycategory = async (req, res) => {
 }
 
 module.exports.getByStatus = async (req, res) => {
+    let { page = 1, limit = 10 } = req.query
+    page = parseInt(page)
+    limit = parseInt(limit)
     const status = req.params.status
     await Todo.find({ status: status })
+    .skip((page - 1) * limit)
+        .limit(limit)
         .then(todo => {
             res.status(200).json(todo)
         })
@@ -148,7 +158,12 @@ module.exports.getByStatus = async (req, res) => {
 }
 
 module.exports.sortTodo = async (req, res) => {
+    let { page = 1, limit = 10 } = req.query
+    page = parseInt(page)
+    limit = parseInt(limit)
     await Todo.find()
+    .skip((page - 1) * limit)
+        .limit(limit)
         .sort({ createdAt: 1 })
         .then((todo) => {
             res.status(200).json(todo)
